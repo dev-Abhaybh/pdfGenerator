@@ -5,7 +5,7 @@ const ejs = require("ejs");
 require("dotenv").config();
 module.exports.pdfGenerator = async (req, res) => {
   const user = req.body;
-
+  const details = req.body;
   const compile = async (template, data) => {
     const filePath = path.join(process.cwd(), "views", `${template}.ejs`);
     const html = await fs.readFile(filePath, "utf-8");
@@ -25,7 +25,7 @@ module.exports.pdfGenerator = async (req, res) => {
       console.log("in generate pdf function now");
 
       const page = await browseer.newPage();
-      const content = await compile("abc", { user });
+      const content = await compile("payment", { data: details });
       await page.setContent(content);
       await page.emulateMediaFeatures("screen");
       console.log("before pdf");
@@ -38,6 +38,7 @@ module.exports.pdfGenerator = async (req, res) => {
       if (pdf) {
         let file = await fs.createReadStream(process.cwd() + "/tmp/abc.pdf");
         let stat = fs.statSync(process.cwd() + "/tmp/abc.pdf");
+
         return { file, stat, pdf };
       }
       console.log(pdf);
